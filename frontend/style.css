@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=JetBrains+Mono&display=swap');
+
+:root {
+    --neon-blue: #00d4ff;
+    --neon-green: #00ff99;
+    --neon-red: #ff0055;
+    --bg-black: #050507;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: radial-gradient(circle at center, #111827 0%, #050507 100%);
+    color: white;
+    font-family: 'JetBrains Mono', monospace;
+    overflow-x: hidden;
+}
+
+/* GRID */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(0,212,255,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+    z-index: -2;
+}
+
+/* SCAN LINE */
+body::after {
+    content: "";
+    position: fixed;
+    top: -100%;
+    width: 100%;
+    height: 4px;
+    background: var(--neon-blue);
+    box-shadow: 0 0 20px var(--neon-blue);
+    opacity: 0.25;
+    animation: scan 10s linear infinite;
+    z-index: 9999;
+}
+
+@keyframes scan { 0% { top: -10%; } 100% { top: 110%; } }
+
+/* INTRO */
+.intro {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.glitch {
+    font-family: Orbitron;
+    font-size: 5rem;
+    color: var(--neon-green);
+    text-shadow: 0 0 15px rgba(0,255,153,0.5);
+}
+
+.cyber-subtitle {
+    margin-top: 10px;
+    letter-spacing: 2px;
+    opacity: 0.8;
+}
+
+/* LOGIN */
+/* LOGIN */
+.login-section {
+    height: 100vh;             /* FULL SCREEN like intro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-box {
+    padding: 40px;
+    width: 320px;
+    text-align: center;
+}
+
+
+.login-box input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    background: transparent;
+    border: 1px solid var(--neon-blue);
+    color: white;
+}
+
+.login-box button {
+    width: 100%;
+    padding: 10px;
+    background: var(--neon-blue);
+    border: none;
+    cursor: pointer;
+}
+
+/* GLASS PANELS */
+.glass {
+    background: rgba(255,255,255,0.02);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* DASHBOARD */
+.dashboard-wrapper {
+    max-width: 1400px;
+    margin: auto;
+    padding: 50px;
+    position: relative;
+}
+
+/* LOCK */
+.dashboard-lock {
+    position: absolute;
+    inset: 0;
+    background: rgba(5,5,7,0.85);
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.dashboard-lock.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* HEADER */
+.hud-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.hud-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* AI ENGINE LIGHT */
+.pulse {
+    width: 8px;
+    height: 8px;
+    background: var(--neon-green);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--neon-green);
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+/* KPI HUB */
+.kpi-hub {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 35px;
+    margin-bottom: 50px;
+}
+
+.cyber-card {
+    padding: 32px;
+    text-align: center;
+    border-bottom: 3px solid var(--neon-blue);
+    position: relative;
+}
+
+.cyber-card.danger { border-color: var(--neon-red); color: var(--neon-red); }
+.cyber-card.accent { border-color: var(--neon-green); }
+
+/* CHARTS */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.hud-panel { height: 420px; padding: 20px; position: relative; }
+.hud-panel canvas { width: 100% !important; height: 100% !important; }
+.panel-header { font-size: 0.8rem; letter-spacing: 3px; color: var(--neon-blue); margin-bottom: 10px; }
+
+/* TERMINAL */
+.terminal-box { padding: 20px; }
+.terminal-header { margin-bottom: 10px; color: var(--neon-blue); letter-spacing: 2px; }
+.terminal-body p { font-size: 0.85rem; margin-bottom: 6px; }
+.terminal-body span { color: var(--neon-blue); }
+.error { color: var(--neon-red); }
+.success { color: var(--neon-green); }
