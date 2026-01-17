@@ -1,2 +1,4 @@
 backend/model.pkl
 venv/
+__pycache__/
+*.pyc
