@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SentinelAI | Neural Command</title>
+
+    <!-- Styles -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -16,8 +20,6 @@
             <div class="scanline"></div>
         </div>
         <p class="cyber-subtitle">TERMINAL ACCESS : INITIALIZING...</p>
-        <!-- Scroll button removed to eliminate blinking line -->
-        <!-- <div class="scroll-btn"><span></span></div> -->
     </section>
 
     <!-- LOGIN -->
@@ -26,7 +28,8 @@
             <h2>AUTHENTICATION</h2>
             <input type="email" placeholder="EMAIL">
             <input type="password" placeholder="PASSWORD">
-            <button id="loginBtn">LOGIN</button>
+            <!-- ✅ SINGLE LOGIN BUTTON -->
+            <button onclick="handleLogin()">LOGIN</button>
         </div>
     </section>
 
@@ -43,30 +46,25 @@
 
         <!-- HEADER -->
         <header class="hud-header">
-            <div class="hud-corner-top-left"></div>
             <div class="hud-title">SYSTEM COMMAND CENTER v1.0</div>
             <div class="hud-status">
                 <span class="pulse"></span> AI ENGINE : ENCRYPTED
             </div>
-            <div class="hud-corner-top-right"></div>
         </header>
 
         <!-- KPI -->
         <div class="kpi-hub">
             <div class="cyber-card glass">
-                <div class="corner-accents"></div>
                 <small>AUTH SCANS</small>
-                <h2 class="counter" data-target="1248">0</h2>
+                <h2>1248</h2>
             </div>
             <div class="cyber-card glass danger">
-                <div class="corner-accents"></div>
                 <small>THREAT LEVEL</small>
-                <h2 class="glimmer">CRITICAL</h2>
+                <h2>CRITICAL</h2>
             </div>
             <div class="cyber-card glass accent">
-                <div class="corner-accents"></div>
                 <small>AI PRECISION</small>
-                <h2>99.8<span>%</span></h2>
+                <h2>99.8%</h2>
             </div>
         </div>
 
@@ -86,14 +84,13 @@
         <div class="terminal-box glass">
             <div class="terminal-header">ENCRYPTED EVENT LOG</div>
             <div class="terminal-body" id="logStream">
-                <p><span>[15:40:12]</span> > PROTOCOL 9 INITIALIZED...</p>
-                <p class="error"><span>[15:42:05]</span> > DETECTION: UNKNOWN IP SOURCE BRUTE FORCE</p>
-                <p class="success"><span>[15:43:10]</span> > AI MITIGATION SUCCESSFUL</p>
+                <!-- Logs will be injected by JS -->
             </div>
         </div>
 
     </main>
 
+    <!-- Scripts -->
     <script src="script.js"></script>
 </body>
 </html>
