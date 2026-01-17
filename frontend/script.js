@@ -1,4 +1,3 @@
-// Call backend API and get AI result
 async function sendLoginData() {
   const payload = {
     failed_attempts: 6,
@@ -16,17 +15,14 @@ async function sendLoginData() {
     });
 
     const result = await response.json();
-    console.log(result);
 
-    // Update UI (simple demo)
     document.getElementById("ai-label").innerText = result.ai_label;
     document.getElementById("risk-score").innerText = result.risk_score + "%";
     document.getElementById("ai-explanation").innerText = result.ai_explanation;
 
   } catch (error) {
-    console.error("Error connecting to backend:", error);
+    console.error("Backend connection failed:", error);
   }
 }
 
-// Run automatically when page loads
 sendLoginData();
