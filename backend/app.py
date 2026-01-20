@@ -77,6 +77,7 @@ def predict():
         "userDisplay": target_vector,
         "valNodes": threat_id,
         "valLoad": "MALICIOUS" if score > 50 else "NORMAL",
+        "valIntegrity": "CRITICAL" if score > 50 else "OPTIMAL",  # ADD THIS LINE
         "sysStatus": f"RISK LEVEL: {score}%",
         "logs": logs,
         "risk_data": [100-score, score/2, score/2]
