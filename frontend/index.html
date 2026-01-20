@@ -310,53 +310,58 @@
     });
 
     /* --- EDGE HEURISTICS (LOCAL LOGIC) --- */
-    function validateLogin() {
-        const url = document.getElementById('urlInput').value.toLowerCase();
-        const btn = document.querySelector('.btn-access');
-        if (!url) return;
+    async function validateLogin() {
+    const urlInput = document.getElementById('urlInput').value.toLowerCase();
+    const btn = document.querySelector('.btn-access');
+    const error = document.getElementById('loginError');
 
-        btn.innerText = "SCANNING...";
+    if (!urlInput) return;
+    btn.innerText = "SCANNING...";
+    if(error) error.style.display = "none";
+
+    setTimeout(() => {
+        // --- DATA LOGIC ---
+        let score = 12;
+        let vector = "SECURE_GATEWAY";
+        let threatId = "GRID_NOMINAL";
+        let verdict = "OPTIMAL"; // Matches your "Risk Verdict" box
+        let logData = ["Protocol: Verified", "Traffic: Nominal", "Neural Sync: Stable"];
+
+        // The "Traps"
+        if (urlInput.includes("admin") || urlInput.includes("root")) {
+            score = 98; vector = "ROOT_ACCESS"; threatId = "T1078"; verdict = "CRITICAL";
+            logData = ["CRITICAL: UNAUTHORIZED ATTEMPT", "ACTION: FIREWALL LOCKDOWN"];
+        } else if (urlInput.includes("paypal") || urlInput.includes("bank")) {
+            score = 92; vector = "PHISHING_DOMAIN"; threatId = "T1566"; verdict = "MALICIOUS";
+            logData = ["THREAT: PHISHING SIGNATURE", "STATUS: BLOCKED"];
+        }
+
+        // --- UI UPDATES (The Accuracy Fix) ---
+        document.getElementById('userDisplay').innerText = vector; // Top Header
+        document.getElementById('valLoad').innerText = vector;    // Box 1
+        document.getElementById('valNodes').innerText = threatId;  // Box 2
         
-        // Instant response bypasses Server errors
-        setTimeout(() => {
-            let score = 12;
-            let vector = "UNKNOWN_NODE";
-            let threatId = "T0000";
-            let verdict = "NORMAL";
-            let logData = ["Protocol: Verified", "Traffic: Nominal"];
+        // This targets the specific H2 inside your Integrity Card
+        const verdictEl = document.getElementById('valIntegrity');
+        if(verdictEl) {
+            verdictEl.innerText = verdict;
+            verdictEl.style.color = score > 50 ? 'var(--neon-red)' : 'var(--neon-green)';
+        }
 
-            if (url.includes("admin") || url.includes("root") || url.includes("system")) {
-                score = 98; vector = "ROOT_ACCESS"; threatId = "T1078"; verdict = "MALICIOUS";
-                logData = ["CRITICAL: UNAUTHORIZED ATTEMPT", "ACTION: FIREWALL LOCKDOWN"];
-            } else if (url.includes("paypal") || url.includes("bank") || url.includes("login")) {
-                score = 92; vector = "BANKING_DB"; threatId = "T1566"; verdict = "MALICIOUS";
-                logData = ["THREAT: PHISHING SIGNATURE", "STATUS: BLOCKED"];
-            } else if (url.length > 150) {
-                score = 85; vector = "MEMORY_STACK"; threatId = "T1203"; verdict = "MALICIOUS";
-                logData = ["ANOMALY: BUFFER OVERFLOW ATTEMPT"];
-            } else if (url.includes("https")) {
-                vector = url.split('.')[0].replace('https://','').toUpperCase();
-            }
+        document.getElementById('sysStatus').innerText = `RISK LEVEL: ${score}%`;
 
-            currentRiskScore = score;
-            document.getElementById('userDisplay').innerText = vector;
-            document.getElementById('valLoad').innerText = vector;
-            document.getElementById('valNodes').innerText = threatId;
-            document.getElementById('valIntegrity').innerText = verdict;
-            document.getElementById('valIntegrity').style.color = score > 50 ? 'var(--neon-red)' : 'var(--neon-green)';
-            document.getElementById('sysStatus').innerText = `RISK LEVEL: ${score}%`;
+        // Theme Switch
+        if(score > 50) {
+            document.documentElement.style.setProperty('--neon-blue', '#ff0055');
+            updateSidebar('threat');
+        } else {
+            document.documentElement.style.setProperty('--neon-blue', '#00d4ff');
+            updateSidebar('safe');
+        }
 
-            if(score > 50) {
-                document.documentElement.style.setProperty('--neon-blue', '#ff0055');
-                updateSidebar('threat');
-            } else {
-                document.documentElement.style.setProperty('--neon-blue', '#00d4ff');
-                updateSidebar('safe');
-            }
-
-            enterDashboard([100-score, score/2, score/2], logData);
-        }, 1200);
-    }
+        enterDashboard([100-score, score/2, score/2], logData);
+    }, 1200);
+}
 
     function enterDashboard(pieData, initialLogs) {
         document.getElementById('loginSec').style.opacity = '0';
@@ -410,11 +415,23 @@
     }
 
     function updateSidebar(mode) {
-        const list = document.getElementById('drawerLinks');
-        list.innerHTML = mode === 'threat' ? 
-            `<li onclick="toggleModule(this)">ISOLATE_NODES</li><li onclick="toggleModule(this)">TRACE_ORIGIN</li>` :
-            `<li onclick="toggleModule(this)">RUN_DIAGNOSTICS</li><li onclick="toggleModule(this)">ROTATE_KEYS</li>`;
+    const list = document.getElementById('drawerLinks');
+    if(!list) return;
+    
+    if(mode === 'threat') {
+        list.innerHTML = `
+            <li onclick="toggleModule(this)" style="color:var(--neon-red)">TERMINATE_NODE</li>
+            <li onclick="toggleModule(this)">TRACE_ATTACK</li>
+            <li onclick="toggleModule(this)">ENCRYPT_LOGS</li>
+        `;
+    } else {
+        list.innerHTML = `
+            <li onclick="toggleModule(this)">RUN_DIAGNOSTICS</li>
+            <li onclick="toggleModule(this)">SYNC_CORE</li>
+            <li onclick="toggleModule(this)">OPTIMIZE_TRAFFIC</li>
+        `;
     }
+}
 
     function toggleDrawer(e) { e.stopPropagation(); document.getElementById('sideDrawer').classList.toggle('open'); }
     function closeOnDash(e) { if(!document.getElementById('sideDrawer').contains(e.target)) document.getElementById('sideDrawer').classList.remove('open'); }
