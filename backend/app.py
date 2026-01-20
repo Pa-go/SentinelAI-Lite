@@ -1,10 +1,22 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 import random
 
-app = Flask(__name__)
+# --- CONFIGURATION FOR "ZERO-MOVE" STRUCTURE ---
+# This tells Flask: "Look for HTML/CSS in the folder adjacent to me (../frontend)"
+app = Flask(__name__, 
+            template_folder='../frontend', 
+            static_folder='../frontend',
+            static_url_path='')
+
 CORS(app)
 
+# --- NEW: SERVE THE WEBSITE (Crucial for Deployment) ---
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+# --- PREDICTION API (Your Heuristics Engine) ---
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.json
