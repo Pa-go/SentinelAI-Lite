@@ -40,6 +40,7 @@ Dynamic theme switching based on threat level .
 
 Project Architecture
 
+<pre>
 SentinelAI-Lite/
 │
 ├── backend/
@@ -53,7 +54,7 @@ SentinelAI-Lite/
 │
 ├── README.md
 └── .gitignore
-
+</pre>
 
 How It Works (Flow)
 
