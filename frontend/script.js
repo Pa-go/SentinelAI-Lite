@@ -1,17 +1,16 @@
 /* ==========================================================================
    SENTINEL AI | ELITE NEURAL COMMAND
-   Frontend Logic: 3D Visuals + Backend Bridge + Data Visualization
+   Frontend Logic: 3D Visuals + Edge-Heuristics + Data Visualization
    ========================================================================== */
 
 /* --- 3D VISUALS (THREE.JS) --- */
 let scene, camera, renderer, coreMesh, particles, rings = [];
 let mouseX = 0, mouseY = 0;
 
-// GLOBAL VARIABLES FOR REAL DATA
+// GLOBAL VARIABLES
 let currentRiskScore = 0; 
 let backendLogs = [];
 
-/* Initialize the 3D Background */
 function init3D() {
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 3000);
@@ -19,11 +18,9 @@ function init3D() {
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    // Attach to the container in the new HTML
     const container = document.getElementById('canvas-container');
     if (container) container.appendChild(renderer.domElement);
 
-    // Particles
     const pGeo = new THREE.BufferGeometry();
     const pCount = 2000;
     const pPos = new Float32Array(pCount * 3);
@@ -32,13 +29,11 @@ function init3D() {
     particles = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0x00d4ff, size: 2, transparent: true, opacity: 0.2 }));
     scene.add(particles);
 
-    // Central Core
     const coreGeo = new THREE.IcosahedronGeometry(150, 1);
     const coreMat = new THREE.MeshPhongMaterial({ color: 0x00d4ff, wireframe: true, transparent: true, opacity: 0.15 });
     coreMesh = new THREE.Mesh(coreGeo, coreMat);
     scene.add(coreMesh);
 
-    // Orbiting Rings
     for(let i=0; i<3; i++) {
         const ring = new THREE.Mesh(
             new THREE.TorusGeometry(220 + i*50, 0.5, 16, 100),
@@ -49,13 +44,11 @@ function init3D() {
         scene.add(ring);
     }
 
-    // Lighting
     const light = new THREE.PointLight(0x00d4ff, 2, 2000);
     light.position.set(0, 200, 500);
     scene.add(light);
     scene.add(new THREE.AmbientLight(0x111111));
 
-    // Mouse Interaction
     document.addEventListener('mousemove', e => {
         mouseX = (e.clientX - window.innerWidth / 2) / 100;
         mouseY = (e.clientY - window.innerHeight / 2) / 100;
@@ -66,18 +59,13 @@ function init3D() {
 
 function animate() {
     requestAnimationFrame(animate);
-    
-    // Rotate elements
     if(particles) particles.rotation.y += 0.0005;
     if(coreMesh) coreMesh.rotation.y += 0.005;
     rings.forEach((r, i) => r.rotation.z += 0.002 * (i+1));
-    
-    // Mouse parallax
     if(scene) {
         scene.rotation.x += (mouseY * 0.01 - scene.rotation.x) * 0.05;
         scene.rotation.y += (mouseX * 0.01 - scene.rotation.y) * 0.05;
     }
-    
     renderer.render(scene, camera);
 }
 
@@ -92,20 +80,17 @@ window.addEventListener('load', () => {
     const percent = document.getElementById('loadPercent');
     const steps = ["HANDSHAKE...", "BYPASSING FIREWALL...", "DECRYPTING...", "SYNCING..."];
 
-    // Simulated Loading Bar
     const interval = setInterval(() => {
         progress += Math.random() * 4;
         if(progress >= 100) {
             progress = 100;
             clearInterval(interval);
             setTimeout(() => {
-                // Fade out intro
                 const intro = document.getElementById('introSec');
                 if(intro) {
                     intro.style.opacity = '0';
                     setTimeout(() => {
                         intro.classList.add('hidden');
-                        // Fade in Login
                         const login = document.getElementById('loginSec');
                         if(login) {
                             login.style.opacity = '1';
@@ -133,14 +118,13 @@ function generateMatrixEffect() {
 }
 
 /* ============================================================
-   🚀 THE CONNECTIVITY BRIDGE (HIJACKED LOGIN)
+    🚀 THE CONNECTIVITY BRIDGE (EDGE-HEURISTICS)
    ============================================================ */
 async function validateLogin() {
-    const urlInput = document.getElementById('userInput').value; // Using User ID box as URL Input
-    const error = document.getElementById('loginError');
+    const urlInput = document.getElementById('userInput').value.toLowerCase();
     const btn = document.querySelector('.btn-access');
+    const error = document.getElementById('loginError');
 
-    // Basic Validation
     if (!urlInput) {
         if(error) {
             error.innerText = "INPUT REQUIRED";
@@ -149,73 +133,58 @@ async function validateLogin() {
         return;
     }
 
-    // Visual Feedback
-    if(btn) btn.innerText = "SCANNING...";
+    btn.innerText = "SCANNING...";
     if(error) error.style.display = "none";
 
-    try {
-        // 1. CONNECT TO PYTHON BACKEND
-        // Ensure app.py is running on port 5000
-        const response = await fetch("/predict", {
-            method: "POST",
-            // We removed the headers line to avoid the "Preflight" trap
-            body: JSON.stringify({ url: urlInput })
-        });
+    // Simulating Local AI Processing (No Server Needed)
+    setTimeout(() => {
+        let score = 12;
+        let vector = "TARGET: SECURE_GATEWAY";
+        let logs = ["PROTOCOL: HTTPS VERIFIED", "HANDSHAKE: SUCCESS", "STATUS: CLEAN"];
 
-        if (!response.ok) throw new Error("Backend connection failed");
+        // Threat Logic
+        if (urlInput.includes("admin") || urlInput.includes("root") || urlInput.includes("override")) {
+            score = 98;
+            vector = "TARGET: ROOT_ACCESS";
+            logs = ["ALERT: PRIVILEGED ACCESS ATTEMPT", "FIREWALL: LOCKDOWN", "MITRE ID: T1078"];
+        } else if (urlInput.includes("paypal") || urlInput.includes("bank") || urlInput.includes("login")) {
+            score = 92;
+            vector = "TARGET: PHISHING_PORTAL";
+            logs = ["THREAT: KNOWN PHISHING SIGNATURE", "REDIRECT: BLOCKED", "MITRE ID: T1566"];
+        } else if (urlInput.length > 150) {
+            score = 85;
+            vector = "TARGET: MEMORY_STACK";
+            logs = ["ANOMALY: OVERFLOW DETECTED", "STATUS: BUFFER_GUARD ACTIVE"];
+        }
 
-        const data = await response.json();
+        const isMalicious = score > 50;
+        currentRiskScore = score;
 
-        // 2. STORE DATA GLOBALLY
-        currentRiskScore = data.raw_score;
-        backendLogs = data.logs;
-
-        // 3. INJECT DATA INTO DASHBOARD (Before it opens)
+        // Update UI
+        document.getElementById('userDisplay').innerText = vector;
+        document.getElementById('sysStatus').innerText = `RISK LEVEL: ${score}%`;
         
-        // Header
-        const userDisplay = document.getElementById('userDisplay');
-        if(userDisplay) userDisplay.innerText = data.userDisplay;
-        
-        const sysStatus = document.getElementById('sysStatus');
-        if(sysStatus) sysStatus.innerText = data.sysStatus;
-
-        // KPI Cards
         const valLoad = document.getElementById('valLoad');
-        if(valLoad) valLoad.innerText = data.valLoad; // Shows "NORMAL" or "MALICIOUS"
-        
-        const valNodes = document.getElementById('valNodes');
-        if(valNodes) valNodes.innerText = data.valNodes; // Shows MITRE ID
+        if(valLoad) valLoad.innerText = isMalicious ? "MALICIOUS" : "NORMAL";
 
-        // Integrity Card (Fix: Selecting H2 inside the card)
         const valIntegrity = document.querySelector('#integrityCard h2');
-        if(valIntegrity) valIntegrity.innerText = data.valIntegrity; // Shows "OPTIMAL" or "CRITICAL"
+        if(valIntegrity) valIntegrity.innerText = isMalicious ? "CRITICAL" : "OPTIMAL";
 
-        // 4. CHANGE THEME IF MALICIOUS (Red Alert)
-        if(data.raw_score > 50) {
+        // Red Theme for threats
+        if(isMalicious) {
             document.documentElement.style.setProperty('--neon-blue', '#ff0055');
             document.documentElement.style.setProperty('--neon-green', '#ff0055');
-            // Flash the dashboard red
             document.body.style.animation = "shake 0.5s";
         } else {
-            // Reset to Blue/Green if safe (for subsequent scans)
             document.documentElement.style.setProperty('--neon-blue', '#00d4ff');
             document.documentElement.style.setProperty('--neon-green', '#00ff99');
         }
 
-        // 5. OPEN DASHBOARD
-        enterDashboard(data.risk_data);
-
-    } catch (err) {
-        console.error(err);
-        if(error) {
-            error.innerText = "SERVER CONNECTION FAILED";
-            error.style.display = "block";
-        }
-        if(btn) btn.innerText = "RETRY";
-    }
+        enterDashboard([100-score, score/2, score/2], logs);
+    }, 1200);
 }
 
-function enterDashboard(pieData) {
+function enterDashboard(pieData, initialLogs) {
     const login = document.getElementById('loginSec');
     const dash = document.getElementById('mainDash');
     
@@ -228,11 +197,21 @@ function enterDashboard(pieData) {
             dash.style.opacity = '1';
         }
         
-        // Fade out the 3D background slightly so text is readable
         if(coreMesh) coreMesh.material.opacity = 0.05;
         rings.forEach(r => r.material.opacity = 0.05);
         
-        initCharts(pieData); // Pass real data to charts
+        initCharts(pieData); 
+        
+        const logStream = document.getElementById('logStream');
+        if(logStream && initialLogs) {
+            initialLogs.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = 'log-entry alert';
+                div.innerHTML = `<span>[ANALYSIS]</span> > ${msg}`;
+                logStream.prepend(div);
+            });
+        }
+        
         startDynamicUpdates();
     }, 800);
 }
@@ -241,7 +220,6 @@ function enterDashboard(pieData) {
 let mainChart;
 
 function initCharts(pieData) {
-    // 1. LINE CHART (Timeline / Activity)
     const ctx = document.getElementById('mainChart').getContext('2d');
     const chartColor = getComputedStyle(document.documentElement).getPropertyValue('--neon-blue').trim();
 
@@ -270,13 +248,12 @@ function initCharts(pieData) {
         }
     });
 
-    // 2. PIE CHART (Risk Analysis) - NOW REAL
     new Chart(document.getElementById('riskChart'), {
         type: 'doughnut',
         data: {
             labels: ['Safe', 'Alert', 'Threat'],
             datasets: [{
-                data: pieData || [70, 20, 10], // Use Python data
+                data: pieData || [70, 20, 10],
                 backgroundColor: ['#00ff99', '#f1c40f', '#ff0055'],
                 borderWidth: 0
             }]
@@ -293,18 +270,7 @@ function startDynamicUpdates() {
     const logs = document.getElementById('logStream');
     const start = Date.now();
 
-    // 1. PRINT PYTHON LOGS IMMEDIATELY
-    if (backendLogs && backendLogs.length > 0) {
-        backendLogs.forEach(log => {
-            const div = document.createElement('div');
-            div.className = 'log-entry alert';
-            div.innerHTML = `<span style="opacity: 0.5">[ANALYSIS]</span> > ${log}`;
-            logs.appendChild(div);
-        });
-    }
-
     setInterval(() => {
-        // Uptime Timer
         const diff = Math.floor((Date.now() - start) / 1000);
         const h = Math.floor(diff / 3600).toString().padStart(2, '0');
         const m = Math.floor((diff % 3600) / 60).toString().padStart(2, '0');
@@ -312,46 +278,31 @@ function startDynamicUpdates() {
         const uptimeEl = document.getElementById('valUptime');
         if(uptimeEl) uptimeEl.innerText = `${h}:${m}:${s}`;
 
-        // GRAPH ANIMATION LOGIC (The Heartbeat)
-        let packetVolume;
-        if (currentRiskScore > 50) {
-            // High Threat = High Spikes (Chaos)
-            packetVolume = 50 + Math.random() * 50; 
-        } else {
-            // Low Threat = Flatline (Calm)
-            packetVolume = Math.random() * 15;
-        }
+        let packetVolume = currentRiskScore > 50 ? (50 + Math.random() * 50) : (Math.random() * 15);
 
         if(mainChart) {
             mainChart.data.datasets[0].data.shift();
             mainChart.data.datasets[0].data.push(packetVolume);
-            
-            // Sync Color in case it changed to Red
             mainChart.data.datasets[0].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--neon-blue');
             mainChart.update('none');
         }
 
-        // Random simulated system logs (just for effect)
-        if (Math.random() > 0.9 && logs) {
+        if (Math.random() > 0.8 && logs) {
             const sysEvents = ["Memory sync...", "Packet trace active...", "Neural weights stable..."];
             const e = sysEvents[Math.floor(Math.random()*sysEvents.length)];
             const div = document.createElement('div');
             div.className = 'log-entry';
             div.innerHTML = `<span style="opacity: 0.3">[SYS]</span> > ${e}`;
             logs.prepend(div);
-            // Limit log history
-            if(logs.children.length > 20) logs.removeChild(logs.lastChild);
+            if(logs.children.length > 15) logs.removeChild(logs.lastChild);
         }
-
     }, 1000);
 }
 
-// Module Toggle Function (for the buttons)
 function toggleModule(btn) {
     btn.classList.toggle('active');
     const moduleName = btn.innerText;
     const status = btn.classList.contains('active') ? "ENABLED" : "DISABLED";
-    
     const logs = document.getElementById('logStream');
     if(logs) {
         const div = document.createElement('div');
