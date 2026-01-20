@@ -156,9 +156,9 @@ async function validateLogin() {
     try {
         // 1. CONNECT TO PYTHON BACKEND
         // Ensure app.py is running on port 5000
-        const response = await fetch("/predict",{
+        const response = await fetch("/predict", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            // We removed the headers line to avoid the "Preflight" trap
             body: JSON.stringify({ url: urlInput })
         });
 

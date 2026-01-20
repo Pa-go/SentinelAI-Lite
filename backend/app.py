@@ -13,7 +13,8 @@ app = Flask(__name__,
             static_folder=frontend_dir,
             static_url_path='')
 
-CORS(app)
+# Replace the old CORS line with this:
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # --- ROUTES ---
 @app.route('/')
