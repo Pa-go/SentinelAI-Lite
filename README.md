@@ -1,4 +1,5 @@
--m# SentinelAI-Lite
+SENTINELAI-LITE
+
 AI-Powered Cyber Threat Analysis & Simulation Platform
 SentinelAI-Lite is a cybersecurity analysis dashboard that simulates how modern Security Operations Centers (SOC) analyze suspicious inputs using AI-driven risk scoring, heuristic detection, and explainable outputs.
 The system takes a real-world style input (URL / source link) and evaluates it using multiple security indicators, producing:
