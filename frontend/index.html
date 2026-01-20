@@ -29,9 +29,34 @@
         .drawer.open { transform: translateX(320px); }
         .side-tab { position: absolute; top: 50%; right: -32px; transform: translateY(-50%); width: 32px; height: 120px; display: flex; align-items: center; justify-content: center; background: rgba(0, 212, 255, 0.1); border: 1px solid var(--neon-blue); border-left: none; color: var(--neon-blue); font-family: 'Orbitron'; font-size: 0.65rem; writing-mode: vertical-rl; cursor: pointer; }
         .drawer-links { list-style: none; margin-top: 20px; }
-        .drawer-links li { margin-bottom: 20px; padding: 10px; border-bottom: 1px solid rgba(0, 212, 255, 0.1); cursor: pointer; transition: 0.3s; }
-        .dropdown-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; font-size: 0.75rem; color: rgba(255, 255, 255, 0.6); }
-        .dropdown-content.active { max-height: 200px; padding: 10px; margin-top: 5px; }
+        .drawer-links li {
+    padding: 10px;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+    cursor: pointer;
+    transition: 0.3s;
+    list-style: none; /* Removes plain text bullets */
+}
+        .dropdown-toggle {
+    font-weight: bold;
+    color: var(--neon-blue);
+    display: block;
+}
+
+.dropdown-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.4;
+    padding: 0 10px;
+}
+
+.dropdown-content.active {
+    max-height: 150px; /* Animate to visible */
+    margin-top: 10px;
+    padding-bottom: 10px;
+}
 
         /* DASHBOARD GRID */
         #mainDash { opacity: 0; visibility: hidden; transition: 1.5s ease; max-width: 1600px; margin: auto; padding: 20px; position: relative; z-index: 10; display: grid; grid-template-areas: "header header header" "kpi kpi kpi" "chart chart sidebar" "logs logs logs"; grid-template-columns: 1fr 1fr 350px; gap: 20px; height: 95vh; }
@@ -132,9 +157,19 @@
     }
     
     function toggleDropdown(element) {
-        const dropdown = element.querySelector('.dropdown-content');
+    // Close all other open dropdowns first
+    document.querySelectorAll('.dropdown-content').forEach(d => {
+        if (d !== element.querySelector('.dropdown-content')) {
+            d.classList.remove('active');
+        }
+    });
+    
+    // Toggle the clicked one
+    const dropdown = element.querySelector('.dropdown-content');
+    if (dropdown) {
         dropdown.classList.toggle('active');
     }
+}
 
     function closeOnDash(e) { 
         if(!document.getElementById('sideDrawer').contains(e.target)) {
@@ -143,18 +178,35 @@
     }
 
     function updateSidebar(mode) {
-        const list = document.getElementById('drawerLinks');
-        if(mode === 'threat') {
-            list.innerHTML = `
-                <li onclick="toggleDropdown(this)">ISOLATE_NODES <div class="dropdown-content">Severs subnet connections.</div></li>
-                <li onclick="toggleDropdown(this)">TRACE_ATTACK <div class="dropdown-content">Origin: Proxy Node 7.</div></li>
-                <li onclick="toggleDropdown(this)">LOCKDOWN <div class="dropdown-content">Critical System Shutoff.</div></li>`;
-        } else {
-            list.innerHTML = `
-                <li onclick="toggleDropdown(this)">DIAGNOSTICS <div class="dropdown-content">All Nodes Optimal.</div></li>
-                <li onclick="toggleDropdown(this)">SYNC_MEMORY <div class="dropdown-content">Cloud Cache: 100%.</div></li>`;
-        }
+    const list = document.getElementById('drawerLinks');
+    if (!list) return;
+
+    if (mode === 'threat') {
+        list.innerHTML = `
+            <li class="nav-item" onclick="toggleDropdown(this)">
+                <div class="dropdown-toggle">ISOLATE_NODES</div>
+                <div class="dropdown-content">Severs subnet connections to prevent lateral movement.</div>
+            </li>
+            <li class="nav-item" onclick="toggleDropdown(this)">
+                <div class="dropdown-toggle">TRACE_ATTACK</div>
+                <div class="dropdown-content">Origin: Proxy Node 7. Attempting backtrace.</div>
+            </li>
+            <li class="nav-item" onclick="toggleDropdown(this)">
+                <div class="dropdown-toggle" style="color:var(--neon-red)">LOCKDOWN</div>
+                <div class="dropdown-content">Emergency system-wide shutoff initiated.</div>
+            </li>`;
+    } else {
+        list.innerHTML = `
+            <li class="nav-item" onclick="toggleDropdown(this)">
+                <div class="dropdown-toggle">DIAGNOSTICS</div>
+                <div class="dropdown-content">All neural nodes report 100% integrity.</div>
+            </li>
+            <li class="nav-item" onclick="toggleDropdown(this)">
+                <div class="dropdown-toggle">SYNC_MEMORY</div>
+                <div class="dropdown-content">Cloud cache synchronized at 100% efficiency.</div>
+            </li>`;
     }
+}
 
     /* --- DETECTION ENGINE --- */
     function validateLogin() {
