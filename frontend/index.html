@@ -4,116 +4,529 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SentinelAI | Elite Neural Command</title>
-    <link rel="icon" href="data:,"> <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;500;800&display=swap');
 
         :root {
-            --neon-blue: #00d4ff; --neon-green: #00ff99; --neon-red: #ff0055;
-            --neon-yellow: #f1c40f; --bg-black: #050507; --glass-bg: rgba(0, 10, 20, 0.85);
+            --neon-blue: #00d4ff;
+            --neon-green: #00ff99;
+            --neon-red: #ff0055;
+            --neon-yellow: #f1c40f;
+            --bg-black: #050507;
+            --glass-bg: rgba(0, 10, 20, 0.85);
             --panel-shadow: 0 0 25px rgba(0, 212, 255, 0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; cursor: default; }
-        body, html { width: 100%; height: 100%; overflow-x: hidden; background: var(--bg-black); font-family: 'JetBrains Mono', monospace; color: #fff; }
+
+        body, html {
+            width: 100%; height: 100%; overflow-x: hidden;
+            background: var(--bg-black); font-family: 'JetBrains Mono', monospace; color: #fff;
+        }
 
         #canvas-container { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
-        .crt-overlay { position: fixed; inset: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02)); background-size: 100% 2px, 2px 100%; z-index: 6000; pointer-events: none; opacity: 0.5; }
-        .glass { background: var(--glass-bg); backdrop-filter: blur(15px); border: 1px solid rgba(0, 212, 255, 0.15); box-shadow: var(--panel-shadow); border-radius: 4px; }
 
-        /* SIDEBAR DRAWER & DROP-DOWNS */
-        .drawer { position: fixed; top: 0; left: -320px; width: 320px; height: 100%; z-index: 5500; padding: 30px; border-right: 2px solid var(--neon-blue); transition: transform 0.4s ease; display: none; }
+        .crt-overlay {
+            position: fixed; inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 2px, 2px 100%; z-index: 6000; pointer-events: none; opacity: 0.5;
+        }
+
+        .glass {
+            background: var(--glass-bg); backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 212, 255, 0.15); box-shadow: var(--panel-shadow);
+            border-radius: 4px; transition: all 0.3s ease;
+        }
+/* Enhanced Glitch Effect */
+.glitch {
+    position: relative;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    color: #fff;
+    text-transform: uppercase;
+    position: relative;
+    text-shadow: 0.05em 0 0 var(--neon-red), 
+                 -0.025em -0.05em 0 var(--neon-blue),
+                 0.025em 0.05em 0 var(--neon-green);
+    animation: glitch 500ms infinite;
+}
+
+.glitch::before,
+.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.glitch::before {
+    left: 2px;
+    text-shadow: -2px 0 var(--neon-red);
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim 5s infinite linear alternate-reverse;
+}
+
+.glitch::after {
+    left: -2px;
+    text-shadow: -2px 0 var(--neon-blue);
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim2 1s infinite linear alternate-reverse;
+}
+
+@keyframes glitch {
+    0% {
+        text-shadow: 0.05em 0 0 var(--neon-red), -0.05em -0.025em 0 var(--neon-blue),
+            -0.025em 0.05em 0 var(--neon-green);
+    }
+    14% {
+        text-shadow: 0.05em 0 0 var(--neon-red), -0.05em -0.025em 0 var(--neon-blue),
+            -0.025em 0.05em 0 var(--neon-green);
+    }
+    15% {
+        text-shadow: -0.05em -0.025em 0 var(--neon-red), 0.025em 0.025em 0 var(--neon-blue),
+            -0.05em -0.05em 0 var(--neon-green);
+    }
+    49% {
+        text-shadow: -0.05em -0.025em 0 var(--neon-red), 0.025em 0.025em 0 var(--neon-blue),
+            -0.05em -0.05em 0 var(--neon-green);
+    }
+    50% {
+        text-shadow: 0.025em 0.05em 0 var(--neon-red), 0.05em 0 0 var(--neon-blue),
+            0 -0.05em 0 var(--neon-green);
+    }
+    99% {
+        text-shadow: 0.025em 0.05em 0 var(--neon-red), 0.05em 0 0 var(--neon-blue),
+            0 -0.05em 0 var(--neon-green);
+    }
+    100% {
+        text-shadow: -0.025em 0 0 var(--neon-red), -0.025em -0.025em 0 var(--neon-blue),
+            -0.025em -0.05em 0 var(--neon-green);
+    }
+}
+
+@keyframes glitch-anim {
+    0% { clip: rect(31px, 9999px, 94px, 0); }
+    20% { clip: rect(62px, 9999px, 42px, 0); }
+    40% { clip: rect(16px, 9999px, 78px, 0); }
+    60% { clip: rect(87px, 9999px, 11px, 0); }
+    80% { clip: rect(4px, 9999px, 53px, 0); }
+    100% { clip: rect(90px, 9999px, 98px, 0); }
+}
+
+@keyframes glitch-anim2 {
+    0% { clip: rect(45px, 9999px, 12px, 0); }
+    100% { clip: rect(2px, 9999px, 88px, 0); }
+}
+        /* --- SIDEBAR DRAWER --- */
+        .drawer {
+            position: fixed; top: 0; left: -320px; width: 320px; height: 100%;
+            z-index: 5500; padding: 30px; border-right: 2px solid var(--neon-blue);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none; pointer-events: none;
+        }
         .drawer.active-session { display: block; pointer-events: auto; }
         .drawer.open { transform: translateX(320px); }
-        .side-tab { position: absolute; top: 50%; right: -32px; transform: translateY(-50%); width: 32px; height: 120px; display: flex; align-items: center; justify-content: center; background: rgba(0, 212, 255, 0.1); border: 1px solid var(--neon-blue); border-left: none; color: var(--neon-blue); font-family: 'Orbitron'; font-size: 0.65rem; writing-mode: vertical-rl; cursor: pointer; }
-        .drawer-links { list-style: none; margin-top: 20px; }
-        .drawer-links li {
-    padding: 10px;
-    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
-    cursor: pointer;
-    transition: 0.3s;
-    list-style: none; /* Removes plain text bullets */
-}
-        .dropdown-toggle {
-    font-weight: bold;
-    color: var(--neon-blue);
-    display: block;
-}
 
-.dropdown-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.6);
-    line-height: 1.4;
-    padding: 0 10px;
-}
+        .side-tab {
+            position: absolute; top: 50%; right: -32px; transform: translateY(-50%);
+            width: 32px; height: 120px; display: flex; align-items: center; justify-content: center;
+            background: rgba(0, 212, 255, 0.1); border: 1px solid var(--neon-blue); border-left: none;
+            color: var(--neon-blue); font-family: 'Orbitron'; font-size: 0.65rem; letter-spacing: 2px;
+            text-transform: uppercase; writing-mode: vertical-rl; text-orientation: mixed;
+            cursor: pointer; pointer-events: auto; transition: opacity 0.5s ease;
+        }
+        .tab-hidden { opacity: 0 !important; pointer-events: none !important; }
 
-.dropdown-content.active {
-    max-height: 150px; /* Animate to visible */
-    margin-top: 10px;
-    padding-bottom: 10px;
-}
+        .drawer-header { font-family: 'Orbitron'; color: var(--neon-blue); margin-bottom: 40px; }
+        .drawer-links { list-style: none; }
+        .drawer-links li { margin-bottom: 20px; padding: 10px; border-bottom: 1px solid rgba(0, 212, 255, 0.1); cursor: pointer; transition: 0.3s; }
+        .drawer-links li:hover { background: rgba(0, 212, 255, 0.1); padding-left: 20px; color: var(--neon-blue); }
+        .dropdown-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; font-size: 0.75rem; color: rgba(255, 255, 255, 0.6); line-height: 1.4; }
+        .dropdown-content.active { max-height: 200px; padding: 10px; margin-top: 10px; }
 
-        /* DASHBOARD GRID */
-        #mainDash { opacity: 0; visibility: hidden; transition: 1.5s ease; max-width: 1600px; margin: auto; padding: 20px; position: relative; z-index: 10; display: grid; grid-template-areas: "header header header" "kpi kpi kpi" "chart chart sidebar" "logs logs logs"; grid-template-columns: 1fr 1fr 350px; gap: 20px; height: 95vh; }
-        #introSec, #loginSec { position: fixed; width: 100%; height: 100vh; top: 0; left: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 7000; transition: opacity 1s; }
+        /* --- INTRO & LOGIN --- */
+        #introSec, #loginSec {
+            position: fixed; width: 100%; height: 100vh; top: 0; left: 0;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 7000; transition: opacity 1s;
+        }
+        #introSec { background: radial-gradient(circle at center, #0a0e14 0%, #050507 100%); }
         #loginSec { z-index: 4000; opacity: 0; pointer-events: none; }
-        .login-box { padding: 40px; width: 450px; text-align: center; border-top: 4px solid var(--neon-blue); background: rgba(5, 10, 15, 0.9); }
-        input { width: 100%; background: rgba(0, 212, 255, 0.05); border: 1px solid rgba(0, 212, 255, 0.2); padding: 15px; color: #fff; margin-bottom: 20px; text-align: center; outline: none; }
-        .btn-access { width: 100%; padding: 15px; background: transparent; color: var(--neon-blue); border: 1px solid var(--neon-blue); font-family: 'Orbitron'; cursor: pointer; transition: 0.4s; }
-        .btn-access:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px var(--neon-blue); }
 
-        /* UTILS */
+        .glitch { font-family: 'Orbitron'; font-size: 4rem; font-weight: 900; letter-spacing: 0.3em; color: #fff; text-shadow: 2px 2px var(--neon-red), -2px -2px var(--neon-blue); margin-bottom: 0.5rem; }
+        .sub-glitch { font-family: 'Orbitron'; font-size: 0.8rem; letter-spacing: 8px; color: var(--neon-blue); margin-bottom: 2rem; opacity: 0.8; }
+        .boot-logs { font-family: 'JetBrains Mono'; font-size: 0.6rem; color: rgba(0, 212, 255, 0.4); height: 60px; overflow: hidden; text-align: left; width: 300px; margin-bottom: 10px; }
+
+        .login-box { padding: 40px; width: 450px; text-align: center; border-top: 4px solid var(--neon-blue); background: rgba(5, 10, 15, 0.9); }
+        input { width: 100%; background: rgba(0, 212, 255, 0.05); border: 1px solid rgba(0, 212, 255, 0.2); padding: 15px; color: #fff; font-family: 'JetBrains Mono'; outline: none; text-align: center; margin-bottom: 20px; }
+        button.btn-access { width: 100%; padding: 15px; background: transparent; color: var(--neon-blue); border: 1px solid var(--neon-blue); font-family: 'Orbitron'; font-weight: 700; cursor: pointer; transition: 0.4s; letter-spacing: 2px; }
+        button.btn-access:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px var(--neon-blue); }
+
+        /* --- DASHBOARD LAYOUT (FROM ORIGINAL) --- */
+        #mainDash {
+            opacity: 0; visibility: hidden; transition: 1.5s ease;
+            max-width: 1600px; margin: auto; padding: 20px; position: relative; z-index: 10;
+            display: grid;
+            grid-template-areas: "header header header" "kpi kpi kpi" "chart chart sidebar" "logs logs logs";
+            grid-template-columns: 1fr 1fr 350px; gap: 20px; height: 95vh;
+        }
+
+        header.hud-header { grid-area: header; display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-left: 5px solid var(--neon-blue); }
+        .hud-title { font-family: 'Orbitron'; font-size: 1.2rem; letter-spacing: 4px; font-weight: 900; }
+        .hud-status { display: flex; align-items: center; gap: 12px; font-size: 0.7rem; color: var(--neon-green); }
+        .pulse { width: 8px; height: 8px; background: var(--neon-green); border-radius: 50%; box-shadow: 0 0 10px var(--neon-green); animation: pulseAnim 2s infinite; }
+        @keyframes pulseAnim { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.3); } }
+
+        .kpi-row { grid-area: kpi; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .cyber-card { padding: 20px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+        .cyber-card small { color: var(--neon-blue); letter-spacing: 2px; font-size: 0.6rem; font-weight: 800; display: block; margin-bottom: 8px; }
+        .cyber-card h2 { font-size: 1.5rem; font-family: 'Orbitron'; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .main-chart-area { grid-area: chart; padding: 25px; display: flex; flex-direction: column; }
+        .sidebar-area { grid-area: sidebar; display: flex; flex-direction: column; gap: 20px; }
+        .logs-area { grid-area: logs; padding: 20px; display: flex; flex-direction: column; }
+        .terminal-body { flex-grow: 1; overflow-y: auto; font-size: 0.75rem; color: #aaa; line-height: 1.6; max-height: 200px; }
+
+        .panel-header { font-family: 'Orbitron'; font-size: 0.65rem; letter-spacing: 2px; color: var(--neon-blue); margin-bottom: 20px; border-bottom: 1px solid rgba(0, 212, 255, 0.1); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .log-entry { margin-bottom: 5px; border-left: 2px solid rgba(0, 212, 255, 0.2); padding-left: 10px; }
+        
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto; }
+        .ctrl-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(0, 212, 255, 0.2); padding: 10px; font-size: 0.6rem; color: #fff; cursor: pointer; text-align: center; text-transform: uppercase; font-family: 'Orbitron'; transition: 0.3s; }
+        .ctrl-btn.active { background: var(--neon-blue); color: #000; }
+
         .hidden { display: none !important; }
-        .log-entry { margin-bottom: 5px; border-left: 2px solid rgba(0, 212, 255, 0.2); padding-left: 10px; font-size: 0.75rem; }
     </style>
 </head>
 <body onclick="closeOnDash(event)">
+
     <div class="crt-overlay"></div>
     <div id="canvas-container"></div>
 
     <div id="sideDrawer" class="drawer glass">
-        <div id="sideTab" class="side-tab" onclick="toggleDrawer(event)">Open</div>
-        <div class="drawer-header" style="font-family:'Orbitron'; color:var(--neon-blue)">COMMAND_MENU</div>
-        <ul class="drawer-links" id="drawerLinks"></ul>
+        <div id="sideTab" class="side-tab tab-hidden" onclick="toggleDrawer(event)">Open</div>
+        <div class="drawer-header"><span>COMMAND_MENU</span></div>
+        <ul class="drawer-links">
+            </ul>
     </div>
 
     <section id="introSec">
-        <h1 style="font-family:'Orbitron'; font-size: 4rem; letter-spacing: 15px;">SENTINEL AI</h1>
-        <div id="load-bar" style="width: 300px; height: 2px; background: var(--neon-blue); margin-top: 20px; transition: width 0.1s;"></div>
-    </section>
-
+    <h1 class="glitch" id="scramble-target" data-text="SENTINEL AI">SENTINEL AI</h1>
+    <div class="sub-glitch" id="sub-scramble" data-text="NEURAL_FIRMWARE_V4.0">NEURAL_FIRMWARE_V4.0</div>
+    
+    <div class="boot-logs" id="bootLogs"></div>
+    <div style="text-align: center;">
+        <div style="width: 300px; height: 2px; background: rgba(0, 212, 255, 0.1); position: relative;">
+            <div id="load-bar" style="height: 100%; width: 0%; background: var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue);"></div>
+        </div>
+        <div id="loadPercent" style="font-size: 0.6rem; margin-top:10px; opacity: 0.5;">0%</div>
+    </div>
+</section>
     <section id="loginSec">
         <div class="login-box glass">
-            <h2 style="font-family:'Orbitron'; margin-bottom:30px;">SECURE_GATEWAY</h2>
-            <input type="url" id="urlInput" placeholder="ENTER SOURCE URL">
+            <h2 style="font-family:'Orbitron'; margin-bottom:30px; letter-spacing:5px;">SECURE_GATEWAY</h2>
+            <input type="url" id="urlInput" placeholder="SOURCE_LINK (https://...)" autocomplete="off">
+            <div id="loginError" style="color:var(--neon-red); font-size:0.7rem; display:none; margin-bottom:10px;">INVALID SOURCE PROTOCOL</div>
             <button class="btn-access" onclick="validateLogin()">ESTABLISH CONNECTION</button>
         </div>
     </section>
 
     <main id="mainDash">
-        <header class="hud-header glass" style="grid-area: header; display: flex; justify-content: space-between; align-items: center; padding: 20px;">
-            <div id="userDisplay" style="font-family:'Orbitron';">CORE_LINK</div>
-            <div id="sysStatus">SYSTEM: ACTIVE</div>
+        <header class="hud-header glass">
+            <div class="hud-title">SENTINEL // <span style="color:var(--neon-blue)" id="userDisplay">CORE</span></div>
+            <div class="hud-status"><span class="pulse"></span> <span id="sysStatus">SYSTEM: ACTIVE</span></div>
         </header>
-        <div style="grid-area: kpi; display: flex; gap: 20px;">
-            <div class="cyber-card glass" style="flex:1; padding:20px;"><small>TARGET</small><h2 id="valLoad">--</h2></div>
-            <div class="cyber-card glass" style="flex:1; padding:20px;"><small>THREAT_ID</small><h2 id="valNodes">--</h2></div>
-            <div class="cyber-card glass" style="flex:1; padding:20px;"><small>VERDICT</small><h2 id="valIntegrity">--</h2></div>
+
+        <div class="kpi-row">
+            <div class="cyber-card glass"><small>TARGET VECTOR</small><h2 id="valLoad">--</h2></div>
+            <div class="cyber-card glass"><small>THREAT ID</small><h2 id="valNodes">--</h2></div>
+            <div class="cyber-card glass"><small>SESSION TIME</small><h2 id="valUptime">00:00:00</h2></div>
+            <div class="cyber-card glass" id="integrityCard"><small>RISK VERDICT</small><h2 style="color: var(--neon-green);">--</h2></div>
         </div>
-        <div class="main-chart-area glass" style="grid-area: chart; padding:20px;"><canvas id="mainChart"></canvas></div>
-        <div class="sidebar-area glass" style="grid-area: sidebar; padding:20px;"><canvas id="riskChart"></canvas></div>
-        <div class="logs-area glass" style="grid-area: logs; padding:20px; overflow-y:auto; max-height:200px;" id="logStream"></div>
+
+        <div class="main-chart-area glass">
+            <div class="panel-header"><span>NEURAL CONNECTIVITY FLOW</span><span style="opacity: 0.4;">LIVE TELEMETRY</span></div>
+            <div style="flex-grow: 1; position: relative;"><canvas id="mainChart"></canvas></div>
+        </div>
+
+        <div class="sidebar-area">
+            <div class="cyber-card glass" style="flex: 1;">
+                <div class="panel-header">RISK ANALYSIS</div>
+                <div style="height: 180px;"><canvas id="riskChart"></canvas></div>
+            </div>
+            <div class="cyber-card glass">
+                <div class="panel-header">MODULES</div>
+                <div class="controls">
+                    <div class="ctrl-btn active" onclick="toggleModule(this)">FIREWALL</div>
+                    <div class="ctrl-btn active" onclick="toggleModule(this)">STEALTH</div>
+                    <div class="ctrl-btn" onclick="toggleModule(this)">HEURISTICS</div>
+                    <div class="ctrl-btn" onclick="toggleModule(this)">AUTO-REPAIR</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="logs-area glass">
+            <div class="panel-header">ENCRYPTED SYSTEM LOGS</div>
+            <div class="terminal-body" id="logStream"></div>
+        </div>
     </main>
 
     <script>
-    let scene, camera, renderer, particles, currentRiskScore = 0, systemStartTime, mainChart, riskChart;
+    /* --- TEXT SCRAMBLE COMPONENT --- */
+    class TextScramble {
+        constructor(el) { this.el = el; this.chars = '!<>-_\\/[]{}—=+*^?#________'; this.update = this.update.bind(this); }
+        setText(newText) {
+            const oldText = this.el.innerText;
+            const length = Math.max(oldText.length, newText.length);
+            const promise = new Promise((resolve) => this.resolve = resolve);
+            this.queue = [];
+            for (let i = 0; i < length; i++) {
+                const from = oldText[i] || ''; const to = newText[i] || '';
+                const start = Math.floor(Math.random() * 40); const end = start + Math.floor(Math.random() * 40);
+                this.queue.push({ from, to, start, end });
+            }
+            cancelAnimationFrame(this.frameRequest); this.frame = 0; this.update();
+            return promise;
+        }
+        update() {
+            let output = ''; let complete = 0;
+            for (let i = 0, n = this.queue.length; i < n; i++) {
+                let { from, to, start, end, char } = this.queue[i];
+                if (this.frame >= end) { complete++; output += to; }
+                else if (this.frame >= start) {
+                    if (!char || Math.random() < 0.28) { char = this.chars[Math.floor(Math.random() * this.chars.length)]; this.queue[i].char = char; }
+                    output += `<span style="color:var(--neon-blue)">${char}</span>`;
+                } else { output += from; }
+            }
+            this.el.innerHTML = output;
+            if (complete === this.queue.length) { this.resolve(); } else { this.frameRequest = requestAnimationFrame(this.update); this.frame++; }
+        }
+    }
 
-    /* --- 3D ENGINE --- */
+    /* --- SYSTEM KERNEL --- */
+    let currentRiskScore = 0, backendLogs = [], systemStartTime, mainChart;
+    let scene, camera, renderer, coreMesh, particles, rings = [];
+
+    // --- SIDEBAR LOGIC FROM ORIGINAL ---
+    function toggleDrawer(e) {
+        if(e) e.stopPropagation(); 
+        const drawer = document.getElementById('sideDrawer');
+        const tab = document.getElementById('sideTab');
+        drawer.classList.toggle('open');
+        tab.innerText = drawer.classList.contains('open') ? "Close" : "Open";
+    }
+    
+    function toggleDropdown(element) {
+        event.stopPropagation();
+        const dropdown = element.querySelector('.dropdown-content');
+        document.querySelectorAll('.dropdown-content').forEach(d => { if (d !== dropdown) d.classList.remove('active'); });
+        dropdown.classList.toggle('active');
+    }
+    
+    function closeOnDash(e) {
+        const drawer = document.getElementById('sideDrawer');
+        const sideTab = document.getElementById('sideTab');
+        if (drawer.classList.contains('open') && !drawer.contains(e.target) && e.target !== sideTab) {
+            document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('active'));
+            drawer.classList.remove('open');
+            sideTab.innerText = "Open";
+        }
+    }
+
+    // --- STARTUP LOGIC ---
+    window.addEventListener('load', () => {
+        init3D();
+        const scrubber = new TextScramble(document.getElementById('scramble-target'));
+        const subScrubber = new TextScramble(document.getElementById('sub-scramble'));
+        scrubber.setText('SENTINEL AI');
+        setTimeout(() => subScrubber.setText('NEURAL_FIRMWARE_V4.0_READY'), 500);
+
+        const logs = ["Loading Kernel...", "Syncing Neural Weights...", "Bypassing Proxy Nodes...", "Handshake with Core...", "Memory Allocation: OK", "Initialising Command Interface..."];
+        const logBox = document.getElementById('bootLogs');
+        let logIdx = 0;
+        const logInterval = setInterval(() => {
+            if(logIdx < logs.length) {
+                const p = document.createElement('div');
+                p.innerText = `> ${logs[logIdx]}`;
+                logBox.appendChild(p);
+                logBox.scrollTop = logBox.scrollHeight;
+                logIdx++;
+            }
+        }, 600);
+
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 4;
+            if(progress >= 100) {
+                progress = 100; clearInterval(interval);
+                setTimeout(() => {
+                    document.getElementById('introSec').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('introSec').classList.add('hidden');
+                        document.getElementById('loginSec').style.opacity = '1';
+                        document.getElementById('loginSec').style.pointerEvents = 'auto';
+                    }, 1000);
+                }, 800);
+            }
+            document.getElementById('load-bar').style.width = progress + '%';
+            document.getElementById('loadPercent').innerText = Math.floor(progress) + '%';
+        }, 100);
+    });
+
+    // --- BACKEND LOGIC FROM ORIGINAL ---
+    async function validateLogin() {
+        const urlInput = document.getElementById('urlInput').value;
+        if (!urlInput) return;
+
+        try {
+            const response = await fetch("http://127.0.0.1:5000/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url: urlInput })
+            });
+            const data = await response.json();
+            currentRiskScore = data.raw_score;
+            backendLogs = data.logs;
+
+            // Update UI with data
+            document.getElementById('userDisplay').innerText = data.userDisplay;
+            document.getElementById('valLoad').innerText = data.userDisplay;
+            document.getElementById('valNodes').innerText = data.valNodes;
+            document.querySelector('#integrityCard h2').innerText = data.valLoad;
+
+            // Color Themes
+            if(data.raw_score > 50) {
+                document.documentElement.style.setProperty('--neon-blue', '#ff0055');
+                updateSidebar('threat');
+            } else {
+                document.documentElement.style.setProperty('--neon-blue', '#00d4ff');
+                updateSidebar('safe');
+            }
+
+            enterDashboard(data.risk_data);
+        } catch (err) {
+            document.getElementById('loginError').style.display = 'block';
+        }
+    }
+
+    function updateSidebar(mode) {
+        const list = document.querySelector('.drawer-links');
+        if(mode === 'threat') {
+            list.innerHTML = `
+                <li onclick="toggleDropdown(this)" style="color:var(--neon-yellow)">ISOLATE_NODES <div class="dropdown-content">Severs connection to infected subnets.</div></li>
+                <li onclick="toggleDropdown(this)">TRACE_ORIGIN <div class="dropdown-content">Backtrace IP through proxy chains.</div></li>
+                <li onclick="toggleDropdown(this)" style="color:var(--neon-red)">INITIATE_LOCKDOWN <div class="dropdown-content">Hard disconnect of external gateway.</div></li>
+            `;
+        } else {
+            list.innerHTML = `
+                <li onclick="toggleDropdown(this)">RUN_DIAGNOSTICS <div class="dropdown-content">Verify integrity of all active neural nodes.</div></li>
+                <li onclick="toggleDropdown(this)">ROTATE_CIPHERS <div class="dropdown-content">Update AES-256 encryption keys.</div></li>
+            `;
+        }
+    }
+
+    function enterDashboard(pieData) {
+        document.getElementById('loginSec').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('loginSec').classList.add('hidden');
+            document.getElementById('sideDrawer').classList.add('active-session');
+            document.getElementById('mainDash').style.visibility = 'visible';
+            document.getElementById('mainDash').style.opacity = '1';
+            
+            systemStartTime = Date.now(); 
+            initCharts(pieData);
+            startDynamicUpdates();
+
+            setTimeout(() => {
+                document.getElementById('sideTab').classList.remove('tab-hidden');
+            }, 1000);
+        }, 800);
+    }
+
+    function initCharts(pieData) {
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        mainChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array(20).fill(''),
+                datasets: [{
+                    data: Array(20).fill(20),
+                    borderColor: getComputedStyle(document.documentElement).getPropertyValue('--neon-blue'),
+                    backgroundColor: 'rgba(0, 212, 255, 0.05)',
+                    fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { max: 100, min: 0 } }, animation: false }
+        });
+
+        new Chart(document.getElementById('riskChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Safe', 'Alert', 'Threat'],
+                datasets: [{
+                    data: pieData || [70, 20, 10], 
+                    backgroundColor: ['#00ff99', '#f1c40f', '#ff0055'],
+                    borderWidth: 0
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '80%' }
+        });
+    }
+
+    function startDynamicUpdates() {
+        const logs = document.getElementById('logStream');
+        
+        // Print Initial Backend Logs
+        if (backendLogs) {
+            backendLogs.forEach(log => {
+                const div = document.createElement('div');
+                div.className = 'log-entry';
+                div.style.color = currentRiskScore > 50 ? 'var(--neon-red)' : 'var(--neon-green)';
+                div.innerHTML = `[INCOMING] > ${log}`;
+                logs.prepend(div);
+            });
+        }
+
+        setInterval(() => {
+            // Timer
+            const diff = Math.floor((Date.now() - systemStartTime) / 1000);
+            const h = Math.floor(diff / 3600).toString().padStart(2, '0');
+            const m = Math.floor((diff % 3600) / 60).toString().padStart(2, '0');
+            const s = (diff % 60).toString().padStart(2, '0');
+            document.getElementById('valUptime').innerText = `${h}:${m}:${s}`;
+
+            // Chart update
+            if(mainChart) {
+                mainChart.data.datasets[0].data.shift();
+                mainChart.data.datasets[0].data.push(Math.random() * 30 + (currentRiskScore > 50 ? 50 : 10));
+                mainChart.update('none');
+            }
+
+            // Background chatter
+            if (Math.random() > 0.8) {
+                const div = document.createElement('div');
+                div.className = 'log-entry';
+                div.innerHTML = `<span style="opacity: 0.3">[SYS_MONITOR]</span> > Heartbeat stable.`;
+                logs.prepend(div);
+                if(logs.children.length > 15) logs.removeChild(logs.lastChild);
+            }
+        }, 1000);
+    }
+
+    function toggleModule(btn) {
+        btn.classList.toggle('active');
+        const div = document.createElement('div');
+        div.className = 'log-entry';
+        div.innerHTML = `[SYS] > MODULE ${btn.innerText} UPDATED`;
+        document.getElementById('logStream').prepend(div);
+    }
+
     function init3D() {
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 2000);
@@ -129,139 +542,6 @@
         scene.add(particles);
         function anim() { requestAnimationFrame(anim); particles.rotation.y += 0.001; renderer.render(scene, camera); }
         anim();
-    }
-
-    /* --- STARTUP --- */
-    window.addEventListener('load', () => {
-        init3D();
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 2;
-            document.getElementById('load-bar').style.width = (progress * 3) + 'px';
-            if(progress >= 100) {
-                clearInterval(interval);
-                document.getElementById('introSec').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('introSec').classList.add('hidden');
-                    document.getElementById('loginSec').style.opacity = '1';
-                    document.getElementById('loginSec').style.pointerEvents = 'auto';
-                }, 1000);
-            }
-        }, 30);
-    });
-
-    /* --- SIDEBAR LOGIC (RESTORED DROPDOWNS) --- */
-    function toggleDrawer(e) { 
-        e.stopPropagation(); 
-        document.getElementById('sideDrawer').classList.toggle('open'); 
-    }
-    
-    function toggleDropdown(element) {
-    // Close all other open dropdowns first
-    document.querySelectorAll('.dropdown-content').forEach(d => {
-        if (d !== element.querySelector('.dropdown-content')) {
-            d.classList.remove('active');
-        }
-    });
-    
-    // Toggle the clicked one
-    const dropdown = element.querySelector('.dropdown-content');
-    if (dropdown) {
-        dropdown.classList.toggle('active');
-    }
-}
-
-    function closeOnDash(e) { 
-        if(!document.getElementById('sideDrawer').contains(e.target)) {
-            document.getElementById('sideDrawer').classList.remove('open'); 
-        }
-    }
-
-    function updateSidebar(mode) {
-    const list = document.getElementById('drawerLinks');
-    if (!list) return;
-
-    if (mode === 'threat') {
-        list.innerHTML = `
-            <li class="nav-item" onclick="toggleDropdown(this)">
-                <div class="dropdown-toggle">ISOLATE_NODES</div>
-                <div class="dropdown-content">Severs subnet connections to prevent lateral movement.</div>
-            </li>
-            <li class="nav-item" onclick="toggleDropdown(this)">
-                <div class="dropdown-toggle">TRACE_ATTACK</div>
-                <div class="dropdown-content">Origin: Proxy Node 7. Attempting backtrace.</div>
-            </li>
-            <li class="nav-item" onclick="toggleDropdown(this)">
-                <div class="dropdown-toggle" style="color:var(--neon-red)">LOCKDOWN</div>
-                <div class="dropdown-content">Emergency system-wide shutoff initiated.</div>
-            </li>`;
-    } else {
-        list.innerHTML = `
-            <li class="nav-item" onclick="toggleDropdown(this)">
-                <div class="dropdown-toggle">DIAGNOSTICS</div>
-                <div class="dropdown-content">All neural nodes report 100% integrity.</div>
-            </li>
-            <li class="nav-item" onclick="toggleDropdown(this)">
-                <div class="dropdown-toggle">SYNC_MEMORY</div>
-                <div class="dropdown-content">Cloud cache synchronized at 100% efficiency.</div>
-            </li>`;
-    }
-}
-
-    /* --- DETECTION ENGINE --- */
-    function validateLogin() {
-        const url = document.getElementById('urlInput').value.toLowerCase();
-        if(!url) return;
-        
-        setTimeout(() => {
-            let score = 12, vector = "SECURE_NODE", tid = "T0000", verdict = "OPTIMAL";
-            if(url.includes("admin") || url.includes("root")) { score = 98; vector = "ROOT_ACCESS"; tid = "T1078"; verdict = "CRITICAL"; }
-            
-            currentRiskScore = score;
-            document.getElementById('userDisplay').innerText = vector;
-            document.getElementById('valLoad').innerText = vector;
-            document.getElementById('valNodes').innerText = tid;
-            document.getElementById('valIntegrity').innerText = verdict;
-            document.getElementById('valIntegrity').style.color = score > 50 ? 'var(--neon-red)' : 'var(--neon-green)';
-
-            if(score > 50) { 
-                document.documentElement.style.setProperty('--neon-blue', '#ff0055'); 
-                updateSidebar('threat');
-            } else { 
-                document.documentElement.style.setProperty('--neon-blue', '#00d4ff'); 
-                updateSidebar('safe');
-            }
-            enterDashboard([100-score, score/2, score/2]);
-        }, 1000);
-    }
-
-    function enterDashboard(pieData) {
-        document.getElementById('loginSec').classList.add('hidden');
-        document.getElementById('sideDrawer').classList.add('active-session');
-        document.getElementById('mainDash').style.visibility = 'visible';
-        document.getElementById('mainDash').style.opacity = '1';
-        systemStartTime = Date.now();
-        initCharts(pieData);
-        setInterval(updateDynamic, 1000);
-    }
-
-    function initCharts(pd) {
-        mainChart = new Chart(document.getElementById('mainChart').getContext('2d'), {
-            type: 'line', data: { labels: Array(10).fill(''), datasets: [{ data: Array(10).fill(10), borderColor: '#00d4ff', tension: 0.4 }] },
-            options: { animation: false, scales: { y: { min: 0, max: 100 } } }
-        });
-        riskChart = new Chart(document.getElementById('riskChart').getContext('2d'), {
-            type: 'doughnut', data: { datasets: [{ data: pd, backgroundColor: ['#00ff99','#f1c40f','#ff0055'] }] },
-            options: { cutout: '80%' }
-        });
-    }
-
-    function updateDynamic() {
-        const diff = Math.floor((Date.now() - systemStartTime) / 1000);
-        document.getElementById('valUptime').innerText = `00:00:${diff.toString().padStart(2,'0')}`;
-        mainChart.data.datasets[0].data.shift();
-        mainChart.data.datasets[0].data.push(Math.random() * 20 + (currentRiskScore > 50 ? 60 : 5));
-        mainChart.update('none');
     }
     </script>
 </body>
