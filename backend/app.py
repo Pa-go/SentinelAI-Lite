@@ -1,15 +1,21 @@
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 import random
+import os
 
-# --- CONFIGURATION ---
+# --- UPDATED CONFIGURATION FOR RENDER ---
+# This ensures Python finds the 'frontend' folder regardless of how Render starts
+base_dir = os.path.dirname(os.path.abspath(__file__))
+frontend_dir = os.path.join(base_dir, "..", "frontend")
+
 app = Flask(__name__, 
-            template_folder='../frontend', 
-            static_folder='../frontend',
+            template_folder=frontend_dir, 
+            static_folder=frontend_dir,
             static_url_path='')
 
 CORS(app)
 
+# --- ROUTES ---
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -29,7 +35,7 @@ def predict():
         "Traffic volume: NOMINAL"
     ]
 
-    # --- 2. HEURISTICS ENGINE (The Traps) ---
+    # --- 2. HEURISTICS ENGINE ---
     if len(url) > 150:
         score = 85
         target_vector = "TARGET: MEMORY_STACK"
@@ -56,13 +62,13 @@ def predict():
         threat_id = "T1190"
         logs.append("CRITICAL: SQL INJECTION SIGNATURE")
 
-    # --- 3. SAFETY CHECKS (If no traps matched) ---
+    # --- 3. SAFETY CHECKS ---
     else:
         if "https" in url:
             score = random.randint(5, 12)
             target_vector = f"TARGET: {url.split('//')[-1].split('/')[0].upper()}" if '//' in url else "TARGET: SECURE_NODE"
             logs.append("PROTOCOL VERIFIED: HTTPS (Secure)")
-        elif "." in url: # Covers cases like "google.com" without https
+        elif "." in url:
             score = random.randint(15, 25)
             target_vector = f"TARGET: {url.upper()}"
             logs.append("ADVISORY: Missing Protocol. Standard scan completed.")
@@ -77,7 +83,7 @@ def predict():
         "userDisplay": target_vector,
         "valNodes": threat_id,
         "valLoad": "MALICIOUS" if score > 50 else "NORMAL",
-        "valIntegrity": "CRITICAL" if score > 50 else "OPTIMAL",  # ADD THIS LINE
+        "valIntegrity": "CRITICAL" if score > 50 else "OPTIMAL",
         "sysStatus": f"RISK LEVEL: {score}%",
         "logs": logs,
         "risk_data": [100-score, score/2, score/2]
