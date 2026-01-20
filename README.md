@@ -10,32 +10,33 @@ Simulated firewall & SOC response
 Visual analytics (charts, logs, telemetry)
 
 Key Features
+
 AI-Inspired Threat Analysis
-Heuristic-based detection (phishing, SQL injection, admin abuse, overflow patterns)
-Risk score generation (0–100%)
-Verdict classification: NORMAL / MALICIOUS
+Heuristic-based detection (phishing, SQL injection, admin abuse, overflow patterns),
+Risk score generation (0–100%),
+Verdict classification: NORMAL / MALICIOUS.
 
 Explainable Security Output
-Human-readable explanation of detected behavior
-Triggered indicators (IOC-style)
-MITRE-mapped threat IDs (simulated)
+Human-readable explanation of detected behavior,
+Triggered indicators (IOC-style),
+MITRE-mapped threat IDs (simulated).
 
 Simulated SOC & Firewall Response
-Firewall lockdown / isolation logic
-Recommended security actions
+Firewall lockdown / isolation logic ,
+Recommended security actions ,
 Visual alert escalation (green → red)
 
 Real-Time Dashboard
-Neural activity line graph
-Risk distribution pie chart
-Encrypted system logs
-Session timer & dynamic telemetry
-Interactive control modules
+Neural activity line graph ,
+Risk distribution pie chart ,
+Encrypted system logs ,
+Session timer & dynamic telemetry ,
+Interactive control modules.
 
 Advanced Cyber UI
-Futuristic SOC-style dashboard
-Three.js 3D visuals
-Dynamic theme switching based on threat level
+Futuristic SOC-style dashboard ,
+Three.js 3D visuals ,
+Dynamic theme switching based on threat level .
 
 Project Architecture
 
